@@ -24,14 +24,17 @@ public final class NexusHttpProxy {
     private final HttpClient httpClient;
     private final String nexusRutHeader;
     private final int port;
+    private final boolean passThruAuthHeader;
 
     private NexusHttpProxy(final Vertx vertx,
                            final String host,
-                           final int port) {
+                           final int port,
+                           final boolean passThruAuthHeader) {
         this.host = host;
         this.httpClient = vertx.createHttpClient();
         this.nexusRutHeader = "X-Auth-Username";
         this.port = port;
+        this.passThruAuthHeader = passThruAuthHeader;
     }
 
     /**
@@ -44,14 +47,16 @@ public final class NexusHttpProxy {
      */
     public static final NexusHttpProxy create(final Vertx vertx,
                                               final String host,
-                                              final int port) {
-        return new NexusHttpProxy(vertx, host, port);
+                                              final int port,
+                                              final boolean passThruAuthHeader) {
+        return new NexusHttpProxy(vertx, host, port, passThruAuthHeader);
     }
 
     /**
      * Proxies the specified HTTP request, enriching its headers with authentication information.
      *
      * @param userId  the ID of the user making the request.
+     * @param accessToken the validated JWT token
      * @param origReq the original request (i.e., {@link RoutingContext#request()}.
      * @param origRes the original response (i.e., {@link RoutingContext#request()}.
      */
@@ -77,9 +82,17 @@ public final class NexusHttpProxy {
         proxiedReq.headers().add(X_FORWARDED_PROTO, getHeader(origReq, X_FORWARDED_PROTO, origReq.scheme()));
         proxiedReq.headers().add(X_FORWARDED_FOR, getHeader(origReq, X_FORWARDED_FOR, origReq.remoteAddress().host()));
         proxiedReq.headers().addAll(origReq.headers());
+        
+        // Don't pass auth header to upstream if there's a valid JWT
+        if (!passThruAuthHeader || accessToken != null) {
+            proxiedReq.headers().remove(HttpHeaders.AUTHORIZATION);
+        }
+        
+        // Always include valid JWT in header
         if (accessToken != null) {
             proxiedReq.headers().add("X-Auth-Token", accessToken);
         }
+
         proxiedReq.headers().remove(HttpHeaders.CONTENT_LENGTH);
         injectRutHeader(proxiedReq, userId);
         origReq.handler(proxiedReq::write);

@@ -15,11 +15,20 @@ dependencies {
     implementation 'com.auth0:java-jwt:3.10.3'
     implementation 'com.auth0:jwks-rsa:0.9.0'
 
-    compile 'ch.qos.logback:logback-classic:1.2.3'
-    compile 'com.google.apis:google-api-services-oauth2:v1-rev127-1.22.0'
-    compile 'io.vertx:vertx-unit:3.4.2'
-    compile 'io.vertx:vertx-web:3.4.2'
-    compile 'io.vertx:vertx-web-templ-handlebars:3.4.2'
+    // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+
+    // https://mvnrepository.com/artifact/com.google.apis/google-api-services-oauth2
+    implementation group: 'com.google.apis', name: 'google-api-services-oauth2', version: 'v2-rev157-1.25.0'
+
+    // https://mvnrepository.com/artifact/io.vertx/vertx-unit
+    implementation group: 'io.vertx', name: 'vertx-unit', version: '3.4.2'
+
+    // https://mvnrepository.com/artifact/io.vertx/vertx-web
+    implementation group: 'io.vertx', name: 'vertx-web', version: '3.4.2'
+
+    // https://mvnrepository.com/artifact/io.vertx/vertx-web-templ-handlebars
+    implementation group: 'io.vertx', name: 'vertx-web-templ-handlebars', version: '3.4.2'
 }
 
 repositories {

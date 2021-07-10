@@ -5,3 +5,8 @@
 .vertx/
 build/
 .env
+.project
+.classpath
+bin/
+.settings/
+.vscode

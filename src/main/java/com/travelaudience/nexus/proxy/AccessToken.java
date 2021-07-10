@@ -11,11 +11,10 @@ public class AccessToken {
         rawToken = token;
     }
 
-    public String principal() throws IOException {
+    public String principal(String claim) throws IOException {
         JsonWebSignature jws = JsonWebSignature
                 .parser(JacksonFactory.getDefaultInstance())
-                .setPayloadClass(PayloadWithEmail.class)
                 .parse(rawToken);
-        return ((PayloadWithEmail) jws.getPayload()).getEmail();
+        return (String)jws.getPayload().get(claim);
     }
 }

@@ -25,6 +25,7 @@ For opt-in authentication against an IDP:
 * A properly configured IDP, e.g. Keycloak
 * A set of credentials (`CLIENT_ID` & `CLIENT_SECRET`)
 * OAuth2 Endpoint URLs (`AUTHORIZE_ENDPOINT`, `TOKEN_ENDPOINT`, `JWK_URL`)
+* Scopes and claim, specify the user ID claim, defaults to email (`USER_ID_CLAIM`)
 * Proper configuration of the resulting client's `REDIRECT_URL`.
 
 ## Running the proxy
@@ -40,6 +41,7 @@ $ BIND_PORT="8080" \
   CLIENT_ID="my-client-id" \
   CLIENT_SECRET="my-client-secret" \
   NEXUS_HTTP_HOST="nexus.example.com" \
+  REPOSITORY_PATH="/repository/*" \
   REDIRECT_URL="https://nexus.example.com/oauth/callback" \
   SESSION_TTL="1440000" \
   UPSTREAM_HTTP_PORT="8081" \
@@ -47,6 +49,10 @@ $ BIND_PORT="8080" \
   TOKEN_ENDPOINT="https://<sso-base-url>/openid-connect/token" \
   JWK_URL="https://<sso-base-url>/openid-connect/certs" \
   TOKEN_ENDPOINT="https://<sso-base-url>/openid-connect/auth" \
+  REQUEST_SCOPES="" \
+  USER_ID_CLAIM="email" \
+  HMAC_SHA256_SECRET="" \
+  PASSTHRU_AUTH_HEADER="true"
   java -jar ./build/libs/nexus-proxy-2.3.0.jar
 ```
 
@@ -61,6 +67,7 @@ $ BIND_PORT="8080" \
 | `CLOUD_IAM_AUTH_ENABLED`            | Whether to enable authentication against an IDP. |
 | `LOG_LEVEL`                         | The desired log level (i.e., `trace`, `debug`, `info`, `warn` or `error`). Defaults to `info`. |
 | `NEXUS_HTTP_HOST`                   | The host used to access the Nexus UI and Maven repositories. |
+| `REPOSITORY_PATH`                   | Repository route serving data to CLI utilities like maven/nuget with http header authentication, defaults to /repository/* |
 | `REDIRECT_URL`                      | The URL where to redirect users after the OAuth2 consent screen. |
 | `SESSION_TTL`                       | The TTL (in _milliseconds_) of a user's session. |
 | `UPSTREAM_HTTP_PORT`                | The port where the proxied Nexus instance listens. |
@@ -68,3 +75,7 @@ $ BIND_PORT="8080" \
 | `AUTHORIZE_ENDPOINT`                | The OAuth2/OpenID auth endpoint for the Authorize Flow |
 | `TOKEN_ENDPOINT`                    | The OAuth2/OpenID token endpoint for the Authorize Flow |
 | `JWK_URL`                           | URL where the server can receive the IDP's JWK. Needed for verifying the tokens signature.  |
+| `REQUEST_SCOPES`                    | Request any additional scopes. The openid scope is always requested |
+| `USER_ID_CLAIM`                     | What claim to use as the user id |
+| `HMAC_SHA256_SECRET`                | String secret used to encrypt JWT tokens created for CLI tools. Leave blank to auto-generate, but they will not survive a restart. |
+| `PASSTHRU_AUTH_HEADER`              | Specify true to pass Authorization header upstream if user name is not 'apikey' if basic auth header is passed in. Defaults to true. |
